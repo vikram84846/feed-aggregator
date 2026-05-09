@@ -20,7 +20,6 @@ from app.models.users import UserModel
 
 
 class UserRepository(BaseRepository):
-
     def __init__(self, session: AsyncSession) -> None:
         """
         Initialize repository with async DB session.
@@ -28,9 +27,7 @@ class UserRepository(BaseRepository):
         self._session = session
 
     async def get_by_email(
-        self,
-        email: str,
-        include_deleted: bool = False
+        self, email: str, include_deleted: bool = False
     ) -> UserModel | None:
         """
         Fetch user using email.
@@ -43,23 +40,17 @@ class UserRepository(BaseRepository):
             UserModel | None
         """
 
-        stmt = select(UserModel).where(
-            UserModel.email == email
-        )
+        stmt = select(UserModel).where(UserModel.email == email)
 
         if not include_deleted:
-            stmt = stmt.where(
-                UserModel.is_deleted == False
-            )
+            stmt = stmt.where(UserModel.is_deleted.is_(False))
 
         result = await self._session.execute(stmt)
 
         return result.scalar_one_or_none()
 
     async def get_by_id(
-        self,
-        user_id: str,
-        include_deleted: bool = False
+        self, user_id: str, include_deleted: bool = False
     ) -> UserModel | None:
         """
         Fetch user using user id.
@@ -72,23 +63,17 @@ class UserRepository(BaseRepository):
             UserModel | None
         """
 
-        stmt = select(UserModel).where(
-            UserModel.id == user_id
-        )
+        stmt = select(UserModel).where(UserModel.id == user_id)
 
         if not include_deleted:
-            stmt = stmt.where(
-                UserModel.is_deleted == False
-            )
+            stmt = stmt.where(UserModel.is_deleted.is_(False))
 
         result = await self._session.execute(stmt)
 
         return result.scalar_one_or_none()
 
     async def get_by_username(
-        self,
-        username: str,
-        include_deleted: bool = False
+        self, username: str, include_deleted: bool = False
     ) -> UserModel | None:
         """
         Fetch user using username.
@@ -101,24 +86,17 @@ class UserRepository(BaseRepository):
             UserModel | None
         """
 
-        stmt = select(UserModel).where(
-            UserModel.username == username
-        )
+        stmt = select(UserModel).where(UserModel.username == username)
 
         if not include_deleted:
-            stmt = stmt.where(
-                UserModel.is_deleted == False
-            )
+            stmt = stmt.where(UserModel.is_deleted.is_(False))
 
         result = await self._session.execute(stmt)
 
         return result.scalar_one_or_none()
 
     async def create(
-        self,
-        username: str,
-        password_hash: str | None = None,
-        email: str | None = None
+        self, username: str, password_hash: str | None = None, email: str | None = None
     ) -> UserModel:
         """
         Create a new user record.
@@ -132,11 +110,7 @@ class UserRepository(BaseRepository):
             Created UserModel object
         """
 
-        user = UserModel(
-            username=username,
-            password_hash=password_hash,
-            email=email
-        )
+        user = UserModel(username=username, password_hash=password_hash, email=email)
 
         self._session.add(user)
 
@@ -145,10 +119,7 @@ class UserRepository(BaseRepository):
 
         return user
 
-    async def delete(
-        self,
-        user_id: str
-    ) -> UserModel | None:
+    async def delete(self, user_id: str) -> UserModel | None:
         """
         Soft delete a user.
 
@@ -159,10 +130,7 @@ class UserRepository(BaseRepository):
             Updated UserModel | None
         """
 
-        user = await self.get_by_id(
-            user_id=user_id,
-            include_deleted=True
-        )
+        user = await self.get_by_id(user_id=user_id, include_deleted=True)
 
         if not user:
             return None

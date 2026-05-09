@@ -8,11 +8,7 @@ This module:
 
 """
 
-from sqlalchemy.ext.asyncio import (
-    create_async_engine,
-    AsyncSession,
-    async_sessionmaker
-)
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from app.core.config import get_settings
 
@@ -24,16 +20,12 @@ settings = get_settings()
 async_engine = create_async_engine(
     url=settings.DB_URL,
     echo=True if settings.ENV == "dev" else False,
-    pool_pre_ping=True
+    pool_pre_ping=True,
 )
 
 
 # Async session factory
-AsyncLocalSession = async_sessionmaker(
-    async_engine,
-    autoflush=True,
-    autocommit=False
-)
+AsyncLocalSession = async_sessionmaker(async_engine, autoflush=True, autocommit=False)
 
 
 async def get_async_session():
