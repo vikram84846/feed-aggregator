@@ -13,14 +13,12 @@ NOTE:
 """
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repos.base_repo import BaseRepository
 from app.models.users import UserModel
 
 
 class UserRepository(BaseRepository):
-
     async def get_by_email(
         self, email: str, include_deleted: bool = False
     ) -> UserModel | None:
@@ -135,3 +133,30 @@ class UserRepository(BaseRepository):
         await self._session.flush()
 
         return user
+
+    async def get_subscribed_topics(self, user_id: str) -> list[str] | None:
+        """
+        lists the topics subscribed by user
+        Args:
+            - user_id : unique identifier for user
+        """
+        # import inside method to avoid circular imports
+        from app.models.posts import TopicModel
+        from app.models.users import TopicSubscriptionModel
+
+        stmt = (
+            select(TopicModel)
+            .join(TopicSubscriptionModel)
+            .where(TopicSubscriptionModel.user_id == user_id)
+        )
+        result = await self._session.execute(stmt)
+
+        topics = result.scalars().all()
+        if topics:
+            return [topic.name for topic in topics]
+
+        user = await self.get_by_id(user_id=user_id)
+        if not user:
+            return None
+
+        return []

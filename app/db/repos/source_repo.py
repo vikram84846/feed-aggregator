@@ -13,13 +13,11 @@ NOTE:
 """
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.repos.base_repo import BaseRepository
 from app.models.sources import SourceModel
 
 
 class SourceRepository(BaseRepository):
-
     async def get_by_id(
         self, source_id: str, include_deleted: bool = False
     ) -> SourceModel | None:

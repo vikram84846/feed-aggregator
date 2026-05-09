@@ -5,6 +5,5 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class BaseRepository(ABC):
-    def __init__(self, session:AsyncSession):
+    def __init__(self, session: AsyncSession):
         self._session = session
-        

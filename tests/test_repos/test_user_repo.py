@@ -1,4 +1,6 @@
 from app.db.repos.user_repo import UserRepository
+from app.db.repos.subscriptions import SubscriptionRepo
+from app.models.posts import TopicModel
 
 
 async def test_user_create_username_only(db_session):
@@ -141,3 +143,80 @@ async def test_user_delete_deleted_user(db_session):
     await user_repo.delete(user_id)
     test_user = await user_repo.delete(user_id)
     assert test_user.is_deleted is True
+
+
+async def test_get_subscribed_topics_no_subscriptions(db_session):
+    """Test get_subscribed_topics returns empty list for user with no subscriptions."""
+    user_repo = UserRepository(db_session)
+    user = await user_repo.create(username="test-user")
+
+    topics = await user_repo.get_subscribed_topics(user.id)
+
+    assert topics == []
+
+
+async def test_get_subscribed_topics_single_subscription(db_session):
+    """Test get_subscribed_topics returns single topic subscription."""
+    user_repo = UserRepository(db_session)
+    user = await user_repo.create(username="test-user")
+
+    # Create a topic
+    topic = TopicModel(name="python-tips")
+    db_session.add(topic)
+    await db_session.flush()
+    await db_session.refresh(topic)
+
+    # Subscribe user to topic
+    subscription_repo = SubscriptionRepo(db_session)
+    await subscription_repo.create(topic_id=topic.id, user_id=user.id)
+
+    # Refresh user to load relationships
+    await db_session.refresh(user)
+
+    topics = await user_repo.get_subscribed_topics(user.id)
+
+    assert topics is not None
+    assert len(topics) == 1
+    assert "python-tips" in topics
+
+
+async def test_get_subscribed_topics_multiple_subscriptions(db_session):
+    """Test get_subscribed_topics returns multiple topic subscriptions."""
+    user_repo = UserRepository(db_session)
+    user = await user_repo.create(username="test-user")
+
+    # Create multiple topics
+    topic1 = TopicModel(name="python")
+    topic2 = TopicModel(name="javascript")
+    topic3 = TopicModel(name="rust")
+    db_session.add_all([topic1, topic2, topic3])
+    await db_session.flush()
+    await db_session.refresh(topic1)
+    await db_session.refresh(topic2)
+    await db_session.refresh(topic3)
+
+    # Subscribe user to all topics
+    subscription_repo = SubscriptionRepo(db_session)
+    await subscription_repo.create(topic_id=topic1.id, user_id=user.id)
+    await subscription_repo.create(topic_id=topic2.id, user_id=user.id)
+    await subscription_repo.create(topic_id=topic3.id, user_id=user.id)
+
+    # Refresh user to load relationships
+    await db_session.refresh(user)
+
+    topics = await user_repo.get_subscribed_topics(user.id)
+
+    assert topics is not None
+    assert len(topics) == 3
+    assert "python" in topics
+    assert "javascript" in topics
+    assert "rust" in topics
+
+
+async def test_get_subscribed_topics_user_not_found(db_session):
+    """Test get_subscribed_topics returns None for non-existent user."""
+    user_repo = UserRepository(db_session)
+
+    topics = await user_repo.get_subscribed_topics("non-existent-user")
+
+    assert topics is None

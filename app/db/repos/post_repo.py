@@ -13,14 +13,12 @@ NOTE:
 """
 
 from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repos.base_repo import BaseRepository
 from app.models.posts import TopicModel, PostModel
 
 
 class TopicRepository(BaseRepository):
-
     async def get_by_id(
         self, topic_id: str, include_deleted: bool = False
     ) -> TopicModel | None:
@@ -86,9 +84,32 @@ class TopicRepository(BaseRepository):
         await self._session.flush()
         return topic
 
+    async def get_subscribed_users(self, topic_id: str) -> list[str] | None:
+        """
+        lists the users subscribed to topic
+        Args:
+            - topic_id : unique identifier for topic
+        """
+        from app.models.users import UserModel, TopicSubscriptionModel
+
+        stmt = (
+            select(UserModel)
+            .join(TopicSubscriptionModel)
+            .where(TopicSubscriptionModel.topic_id == topic_id)
+        )
+
+        result = await self._session.execute(stmt)
+        users = result.scalars().all()
+        if users:
+            return [user.username for user in users]
+        topic = await self.get_by_id(topic_id=topic_id)
+        if not topic:
+            return None
+
+        return []
+
 
 class PostRepository(BaseRepository):
-
     async def get_by_id(
         self, post_id: str, include_deleted: bool = False
     ) -> PostModel | None:
