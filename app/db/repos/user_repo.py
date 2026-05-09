@@ -20,11 +20,6 @@ from app.models.users import UserModel
 
 
 class UserRepository(BaseRepository):
-    def __init__(self, session: AsyncSession) -> None:
-        """
-        Initialize repository with async DB session.
-        """
-        self._session = session
 
     async def get_by_email(
         self, email: str, include_deleted: bool = False

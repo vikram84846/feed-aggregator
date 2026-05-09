@@ -19,13 +19,6 @@ from app.models.sources import SourceModel
 
 
 class SourceRepository(BaseRepository):
-    def __init__(self, session: AsyncSession) -> None:
-        """
-        Initializes SourceRepository object
-        Args:
-            - session: async database session
-        """
-        self._session = session
 
     async def get_by_id(
         self, source_id: str, include_deleted: bool = False

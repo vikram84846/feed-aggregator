@@ -20,13 +20,6 @@ from app.models.posts import TopicModel, PostModel
 
 
 class TopicRepository(BaseRepository):
-    def __init__(self, session: AsyncSession) -> None:
-        """
-        Initalises the TopicRepository object
-        Args:
-            - session: async database session object
-        """
-        self._session = session
 
     async def get_by_id(
         self, topic_id: str, include_deleted: bool = False
@@ -95,13 +88,6 @@ class TopicRepository(BaseRepository):
 
 
 class PostRepository(BaseRepository):
-    def __init__(self, session: AsyncSession) -> None:
-        """
-        Initalises the PostRepository object
-        Args:
-            - session: async database session object
-        """
-        self._session = session
 
     async def get_by_id(
         self, post_id: str, include_deleted: bool = False
