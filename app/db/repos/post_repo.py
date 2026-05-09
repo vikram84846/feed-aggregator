@@ -50,7 +50,7 @@ class TopicRepository(BaseRepository):
         self, topic_name: str, include_deleted: bool = False
     ) -> TopicModel | None:
         """
-        fetches the topic using its id from database
+        fetches the topic using its name from database
         Args:
             - topic_name: name of the topic
             - include_deleted: flag to include delted topics
@@ -110,7 +110,7 @@ class PostRepository(BaseRepository):
         return the post record form database
         Args:
             - post_id: unique post identifeir
-            - include_delted: include soft delted posts
+            - include_deleted: include soft delted posts
         """
 
         stmt = select(PostModel).where(PostModel.id == post_id)
@@ -132,7 +132,7 @@ class PostRepository(BaseRepository):
         fetches the post record(s) filtered by name
         Args:
             - post_title: title of the post(s)
-            - include_delted: inculde soft deleted posts
+            - include_deleted: inculde soft deleted posts
             - offset: no of post to skip
             - limit: no of post to fetch
         """

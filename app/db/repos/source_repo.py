@@ -61,7 +61,7 @@ class SourceRepository(BaseRepository):
         source = await self._session.execute(stmt)
         return source.scalar_one_or_none()
 
-    async def create(self, name: str, bae_url: str) -> SourceModel | None:
+    async def create(self, name: str, base_url: str) -> SourceModel | None:
         """
         creates a post generation source record in database
         Args:
@@ -69,7 +69,7 @@ class SourceRepository(BaseRepository):
             - url: unique url for source
         """
 
-        source = SourceModel(name=name, base_url=bae_url)
+        source = SourceModel(name=name, base_url=base_url)
         self._session.add(source)
         await self._session.flush()
         await self._session.refresh(source)
