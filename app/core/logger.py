@@ -8,7 +8,7 @@ from app.core.config import get_settings
 from colorlog import ColoredFormatter
 
 settings = get_settings()
-LOG_LEVEL = "DEBUG" if settings.ENV == "dev" else "INFO"
+LOG_LEVEL = "DEBUG" if settings.ENV.lower() == "dev" else "INFO"
 
 
 def get_logger(name: str):

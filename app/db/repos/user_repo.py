@@ -12,7 +12,7 @@ NOTE:
     - Transaction lifecycle handled by service layer.
 """
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 from app.db.repos.base_repo import BaseRepository
 from app.models.users import UserModel
@@ -80,6 +80,32 @@ class UserRepository(BaseRepository):
         """
 
         stmt = select(UserModel).where(UserModel.username == username)
+
+        if not include_deleted:
+            stmt = stmt.where(UserModel.is_deleted.is_(False))
+
+        result = await self._session.execute(stmt)
+
+        return result.scalar_one_or_none()
+
+    async def get_by_email_or_username(
+        self, username: str, email: str, include_deleted: bool = False
+    ) -> UserModel | None:
+        """
+        Fetch user using username or email.
+
+        Args:
+            username: unique username
+            email: unique email
+            include_deleted: include soft deleted users
+
+        Returns:
+            UserModel | None
+        """
+
+        stmt = select(UserModel).where(
+            or_(UserModel.username == username, UserModel.email == email)
+        )
 
         if not include_deleted:
             stmt = stmt.where(UserModel.is_deleted.is_(False))

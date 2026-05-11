@@ -19,7 +19,7 @@ settings = get_settings()
 # Create asynchronous database engine
 async_engine = create_async_engine(
     url=settings.DB_URL,
-    echo=True if settings.ENV == "dev" else False,
+    echo=True if settings.ENV.lower() == "dev" else False,
     pool_pre_ping=True,
 )
 

@@ -14,6 +14,11 @@ class Settings(BaseSettings):
 
     DB_URL: str
     ENV: str
+
+    # jwt essintials
+    SECRET: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINS: int = 30
     model_config = SettingsConfigDict(extra="forbid", env_file=".env")
 
 

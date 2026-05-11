@@ -78,7 +78,7 @@ class TopicRepository(BaseRepository):
         topic = await self.get_by_id(topic_id=topic_id, include_deleted=True)
 
         if not topic:
-            return
+            return None
 
         topic.is_deleted = True
         await self._session.flush()

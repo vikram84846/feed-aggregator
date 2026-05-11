@@ -220,3 +220,104 @@ async def test_get_subscribed_topics_user_not_found(db_session):
     topics = await user_repo.get_subscribed_topics("non-existent-user")
 
     assert topics is None
+
+
+async def test_get_by_email_or_username_by_username(
+    db_session,
+):
+    user_repo = UserRepository(db_session)
+
+    await user_repo.create(
+        username="test-user",
+        password_hash="test_hash_password",
+        email="test@test.com",
+    )
+
+    user = await user_repo.get_by_email_or_username(
+        username="test-user",
+        email="wrong@test.com",
+    )
+
+    assert user is not None
+    assert user.username == "test-user"
+    assert user.email == "test@test.com"
+
+
+async def test_get_by_email_or_username_by_email(
+    db_session,
+):
+    user_repo = UserRepository(db_session)
+
+    await user_repo.create(
+        username="test-user",
+        password_hash="test_hash_password",
+        email="test@test.com",
+    )
+
+    user = await user_repo.get_by_email_or_username(
+        username="wrong-username",
+        email="test@test.com",
+    )
+
+    assert user is not None
+    assert user.username == "test-user"
+    assert user.email == "test@test.com"
+
+
+async def test_get_by_email_or_username_invalid(
+    db_session,
+):
+    user_repo = UserRepository(db_session)
+
+    user = await user_repo.get_by_email_or_username(
+        username="invalid-user",
+        email="invalid@test.com",
+    )
+
+    assert user is None
+
+
+async def test_get_by_email_or_username_excludes_deleted_user(
+    db_session,
+):
+    user_repo = UserRepository(db_session)
+
+    user = await user_repo.create(
+        username="deleted-user",
+        password_hash="test_hash_password",
+        email="deleted@test.com",
+    )
+
+    await user_repo.delete(user.id)
+
+    deleted_user = await user_repo.get_by_email_or_username(
+        username="deleted-user",
+        email="deleted@test.com",
+    )
+
+    assert deleted_user is None
+
+
+async def test_get_by_email_or_username_include_deleted(
+    db_session,
+):
+    user_repo = UserRepository(db_session)
+
+    user = await user_repo.create(
+        username="deleted-user",
+        password_hash="test_hash_password",
+        email="deleted@test.com",
+    )
+
+    await user_repo.delete(user.id)
+
+    deleted_user = await user_repo.get_by_email_or_username(
+        username="deleted-user",
+        email="deleted@test.com",
+        include_deleted=True,
+    )
+
+    assert deleted_user is not None
+    assert deleted_user.username == "deleted-user"
+    assert deleted_user.email == "deleted@test.com"
+    assert deleted_user.is_deleted is True
