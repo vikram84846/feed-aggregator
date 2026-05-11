@@ -28,27 +28,21 @@ class UserService:
 
         return await self._user_repo.create(**user)
 
-    async def login(self,payload: UsernameLoginSchema)->TokenSchema:
-        #check if user exists
+    async def login(self, payload: UsernameLoginSchema) -> TokenSchema:
+        # check if user exists
         existing = await self._user_repo.get_by_username(username=payload.username)
         if not existing:
             raise HTTPException(
-                status_code= status.HTTP_401_UNAUTHORIZED,
-                detail="invalid user credentials"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="invalid user credentials",
             )
-        valid_password = verify_password(payload.password,existing.password_hash)
+        valid_password = verify_password(payload.password, existing.password_hash)
 
         if not valid_password:
             raise HTTPException(
-                status_code = status.HTTP_401_UNAUTHORIZED,
-                detail= "invalid user credentials"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="invalid user credentials",
             )
         # now create access token
-        token = create_access_token({
-            "sub":existing.id
-        })
-        return TokenSchema(
-            token=token,
-            token_type="bearer"
-        )
-
+        token = create_access_token({"sub": existing.id})
+        return TokenSchema(token=token, token_type="bearer")

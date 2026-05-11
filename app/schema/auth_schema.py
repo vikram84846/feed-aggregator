@@ -4,13 +4,8 @@ import re
 
 def normalize_username(value: str) -> str:
     value = value.strip().lower()
-    if not re.fullmatch(
-        r"^[A-Za-z0-9_]+$",
-        value
-    ):
-        raise ValueError(
-            "Username can only contain letters, numbers, and underscores"
-        )
+    if not re.fullmatch(r"^[A-Za-z0-9_]+$", value):
+        raise ValueError("Username can only contain letters, numbers, and underscores")
     return value
 
 
@@ -55,7 +50,8 @@ class UsernameLoginSchema(BaseModel):
     @classmethod
     def validate_username(cls, value: str):
         return normalize_username(value)
-    
+
+
 class TokenSchema(BaseModel):
     token: str
     token_type: str

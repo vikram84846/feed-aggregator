@@ -45,4 +45,13 @@ async def get_async_session():
             ...
     """
     async with AsyncLocalSession() as session:
-        yield session
+        try:
+            yield session
+
+            await session.commit()
+        
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()

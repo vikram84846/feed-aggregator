@@ -46,20 +46,13 @@ async def test_create_user_service_duplicate_username(
     )
 
     try:
-
-        await user_service.create(
-            duplicate_payload
-        )
+        await user_service.create(duplicate_payload)
 
         assert False
 
     except HTTPException as exc:
-
         assert exc.status_code == 400
-        assert (
-            exc.detail
-            == "username alreadyin use"
-        )
+        assert exc.detail == "username alreadyin use"
 
 
 async def test_create_user_service_duplicate_email(
@@ -84,20 +77,13 @@ async def test_create_user_service_duplicate_email(
     )
 
     try:
-
-        await user_service.create(
-            duplicate_payload
-        )
+        await user_service.create(duplicate_payload)
 
         assert False
 
     except HTTPException as exc:
-
         assert exc.status_code == 400
-        assert (
-            exc.detail
-            == "username alreadyin use"
-        )
+        assert exc.detail == "username alreadyin use"
 
 
 async def test_create_user_service_username_normalized(
@@ -136,12 +122,10 @@ async def test_create_user_service_password_hashed(
     assert user.email == "secure@example.com"
 
     # ensure raw password is not stored
-    assert (
-        user.password_hash
-        != "Password@123"
-    )
+    assert user.password_hash != "Password@123"
 
     assert user.password_hash is not None
+
 
 async def test_login_user_service_success(
     db_session,
@@ -154,18 +138,14 @@ async def test_login_user_service_success(
         password="Password@123",
     )
 
-    await user_service.create(
-        register_payload
-    )
+    await user_service.create(register_payload)
 
     login_payload = UsernameLoginSchema(
         username="testuser",
         password="Password@123",
     )
 
-    token_response = await user_service.login(
-        login_payload
-    )
+    token_response = await user_service.login(login_payload)
 
     assert token_response is not None
     assert token_response.token is not None
@@ -183,15 +163,11 @@ async def test_login_user_service_invalid_username(
     )
 
     try:
-
-        await user_service.login(
-            login_payload
-        )
+        await user_service.login(login_payload)
 
         assert False
 
     except HTTPException as exc:
-
         assert exc.status_code == 401
         assert exc.detail == "invalid user credentials"
 
@@ -207,9 +183,7 @@ async def test_login_user_service_invalid_password(
         password="Password@123",
     )
 
-    await user_service.create(
-        register_payload
-    )
+    await user_service.create(register_payload)
 
     login_payload = UsernameLoginSchema(
         username="testuser",
@@ -217,24 +191,14 @@ async def test_login_user_service_invalid_password(
     )
 
     try:
-
-        await user_service.login(
-            login_payload
-        )
+        await user_service.login(login_payload)
 
         assert False
 
     except HTTPException as exc:
+        assert exc.status_code == 401
 
-        assert (
-            exc.status_code
-            == 401
-        )
-
-        assert (
-            exc.detail
-            == "invalid user credentials"
-        )
+        assert exc.detail == "invalid user credentials"
 
 
 async def test_login_user_service_returns_valid_jwt(
@@ -248,25 +212,16 @@ async def test_login_user_service_returns_valid_jwt(
         password="Password@123",
     )
 
-    created_user = await user_service.create(
-        register_payload
-    )
+    created_user = await user_service.create(register_payload)
 
     login_payload = UsernameLoginSchema(
         username="jwt_user",
         password="Password@123",
     )
 
-    token_response = await user_service.login(
-        login_payload
-    )
+    token_response = await user_service.login(login_payload)
 
-    payload = verify_access_token(
-        token_response.token
-    )
+    payload = verify_access_token(token_response.token)
 
     assert payload is not None
-    assert (
-        payload["sub"]
-        == created_user.id
-    )
+    assert payload["sub"] == created_user.id
