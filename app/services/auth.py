@@ -17,7 +17,8 @@ class UserService:
         )
         if existing:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="username alreadyin use"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="username or email already exists",
             )
 
         pwd_hash = hash_password(user_payload.password)

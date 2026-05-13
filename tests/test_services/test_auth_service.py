@@ -52,7 +52,7 @@ async def test_create_user_service_duplicate_username(
 
     except HTTPException as exc:
         assert exc.status_code == 400
-        assert exc.detail == "username alreadyin use"
+        assert exc.detail == "username or email already exists"
 
 
 async def test_create_user_service_duplicate_email(
@@ -83,7 +83,7 @@ async def test_create_user_service_duplicate_email(
 
     except HTTPException as exc:
         assert exc.status_code == 400
-        assert exc.detail == "username alreadyin use"
+        assert exc.detail == "username or email already exists"
 
 
 async def test_create_user_service_username_normalized(

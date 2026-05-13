@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, field_validator, EmailStr
+from pydantic import BaseModel, Field, field_validator, EmailStr, ConfigDict
 import re
+from datetime import datetime
 
 
 def normalize_username(value: str) -> str:
@@ -44,7 +45,7 @@ class RegisterUserSchema(BaseModel):
 
 class UsernameLoginSchema(BaseModel):
     username: str = Field(min_length=3, max_length=50)
-    password: str = Field(min_length=8)
+    password: str = Field()
 
     @field_validator("username")
     @classmethod
@@ -55,3 +56,12 @@ class UsernameLoginSchema(BaseModel):
 class TokenSchema(BaseModel):
     token: str
     token_type: str
+
+
+class UserResponseSchema(BaseModel):
+    id: str
+    username: str
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

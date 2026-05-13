@@ -49,7 +49,7 @@ async def get_async_session():
             yield session
 
             await session.commit()
-        
+
         except Exception:
             await session.rollback()
             raise
