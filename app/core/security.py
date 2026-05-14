@@ -12,11 +12,10 @@ from pwdlib import PasswordHash
 import jwt
 from datetime import datetime, timedelta, timezone
 from app.core.config import get_settings
-from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends, HTTPException, status
+
+from fastapi import HTTPException, status
 
 settings = get_settings()
-oauth2_schema = OAuth2PasswordBearer(tokenUrl="login")
 password_hash = PasswordHash.recommended()
 
 
@@ -53,17 +52,3 @@ def verify_access_token(token: str) -> dict:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid or expired token"
         )
-
-
-def get_current_user(token: str = Depends(oauth2_schema)):
-    """
-    returns the current user object from the jwt token if valid
-    Args: token -: jwt access token for user
-    """
-    payload = verify_access_token(token=token)
-    user_id = payload.get("sub")
-    if user_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload"
-        )
-    return user_id

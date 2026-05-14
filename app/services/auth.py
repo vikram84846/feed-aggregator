@@ -46,4 +46,4 @@ class UserService:
             )
         # now create access token
         token = create_access_token({"sub": existing.id})
-        return TokenSchema(token=token, token_type="bearer")
+        return TokenSchema(access_token=token, token_type="bearer")

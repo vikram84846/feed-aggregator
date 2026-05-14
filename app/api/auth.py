@@ -14,7 +14,7 @@ from app.schema.auth_schema import (
     TokenSchema,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
@@ -47,7 +47,8 @@ async def register(
     summary="log user into system via access_token",
 )
 async def login(
-    payload: UsernameLoginSchema, session: AsyncSession = Depends(get_async_session)
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    session: AsyncSession = Depends(get_async_session),
 ):
     """
     logs user into the system and return access token required for authrozation
@@ -57,5 +58,8 @@ async def login(
     """
     user_service = UserService(session)
     # login user
+    payload = UsernameLoginSchema(
+        username=form_data.username, password=form_data.password
+    )
     token = await user_service.login(payload)
     return token
