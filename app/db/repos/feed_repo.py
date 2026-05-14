@@ -96,14 +96,16 @@ class FeedRepo(BaseRepository):
 
         # Filter by topic name
         if topic_name:
-            base_stmt = base_stmt.where(TopicModel.name == topic_name)
+            base_stmt = base_stmt.where(
+                TopicModel.name == topic_name, TopicModel.is_deleted.is_(False)
+            )
 
         # Filter by source name
         if source_name:
             base_stmt = base_stmt.join(
                 SourceModel,
                 SourceModel.id == PostModel.source_id,
-            ).where(SourceModel.name == source_name)
+            ).where(SourceModel.name == source_name, SourceModel.is_deleted.is_(False))
 
         # Query for total matching records
         count_query = select(func.count()).select_from(base_stmt.subquery())
@@ -111,7 +113,7 @@ class FeedRepo(BaseRepository):
         # Final paginated query
         final_query = (
             base_stmt.order_by(
-                PostModel.created_at.desc(),
+                PostModel.published_at.desc(),
                 PostModel.id.desc(),
             )
             .offset(offset)

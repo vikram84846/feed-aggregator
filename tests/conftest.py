@@ -8,7 +8,7 @@ TEST_DB_URL = "sqlite+aiosqlite:///./test.db"
 engine = create_async_engine(TEST_DB_URL)
 
 
-AsyncTestSessionLocal = async_sessionmaker(engine,expire_on_commit=False)
+AsyncTestSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
 @pytest_asyncio.fixture()
