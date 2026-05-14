@@ -84,11 +84,14 @@ class TopicRepository(BaseRepository):
         await self._session.flush()
         return topic
 
-    async def get_subscribed_users(self, topic_id: str) -> list[str] | None:
+    async def get_subscribed_users(
+        self, topic_id: str, include_deleted: bool = False
+    ) -> list[str] | None:
         """
         lists the users subscribed to topic
         Args:
             - topic_id : unique identifier for topic
+            - include_deleted : includes soft delted values
         """
         from app.models.users import UserModel, TopicSubscriptionModel
 
@@ -97,6 +100,8 @@ class TopicRepository(BaseRepository):
             .join(TopicSubscriptionModel)
             .where(TopicSubscriptionModel.topic_id == topic_id)
         )
+        if not include_deleted:
+            stmt = stmt.where(TopicSubscriptionModel.is_deleted.is_(False))
 
         result = await self._session.execute(stmt)
         users = result.scalars().all()

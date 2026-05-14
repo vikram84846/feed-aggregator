@@ -49,25 +49,21 @@ class SubscriptionRepo(BaseRepository):
         subscription = await self._session.execute(stmt)
         return subscription.scalar_one_or_none()
 
-    async def delete(self, subscription_id: str) -> TopicSubscriptionModel | None:
+    async def delete(
+        self, subscription: TopicSubscriptionModel
+    ) -> TopicSubscriptionModel | None:
         """
-        deletes user subscription for the topic
+        soft deletes user subscription for the topic
         Args:
-            - subscription_id : unique identifer for subscription
+            - subscription : subscription object to be deleted
         """
-        subscription = await self.get_by_id(
-            subscription_id=subscription_id, include_deleted=True
-        )
-
-        if not subscription:
-            return None
         subscription.is_deleted = True
         await self._session.flush()
         return subscription
 
     async def exists(
         self, user_id: str, topic_id: str, include_deleted: bool = False
-    ) -> bool:
+    ) -> TopicSubscriptionModel:
         """
         returns True if subscription exists else False
         Agrs:
@@ -82,4 +78,4 @@ class SubscriptionRepo(BaseRepository):
         if not include_deleted:
             stmt = stmt.where(TopicSubscriptionModel.is_deleted.is_(False))
         subscription = await self._session.execute(stmt)
-        return True if subscription.scalar_one_or_none() else False
+        return subscription.scalar_one_or_none()
