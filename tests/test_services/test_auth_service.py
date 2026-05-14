@@ -148,7 +148,7 @@ async def test_login_user_service_success(
     token_response = await user_service.login(login_payload)
 
     assert token_response is not None
-    assert token_response.token is not None
+    assert token_response.access_token is not None
     assert token_response.token_type == "bearer"
 
 
@@ -221,7 +221,7 @@ async def test_login_user_service_returns_valid_jwt(
 
     token_response = await user_service.login(login_payload)
 
-    payload = verify_access_token(token_response.token)
+    payload = verify_access_token(token_response.access_token)
 
     assert payload is not None
     assert payload["sub"] == created_user.id
