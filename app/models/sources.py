@@ -19,5 +19,5 @@ class SourceModel(Base, TimeStampMixin, UUIDMixin, SoftDeletedMixin):
     base_url: Mapped[str] = mapped_column(unique=True, index=True)
 
     posts: Mapped[list["PostModel"]] = relationship(
-        "PostModel", back_populates="source"
+        "PostModel", back_populates="source", lazy="selectin"
     )

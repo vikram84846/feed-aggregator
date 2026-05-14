@@ -25,7 +25,7 @@ async_engine = create_async_engine(
 
 
 # Async session factory
-AsyncLocalSession = async_sessionmaker(async_engine, autoflush=True, autocommit=False)
+AsyncLocalSession = async_sessionmaker(async_engine, autoflush=True, autocommit=False,expire_on_commit=False)
 
 
 async def get_async_session():

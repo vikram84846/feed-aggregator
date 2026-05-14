@@ -34,7 +34,10 @@ class UserModel(Base, TimeStampMixin, UUIDMixin, SoftDeletedMixin):
     )  # later to support via phone also (2 seprate fields required phone and email and username to uniqly identify the user)
 
     topics: Mapped[list["TopicModel"]] = relationship(
-        "TopicModel", secondary="topic_subscriptions", back_populates="users"
+        "TopicModel",
+        secondary="topic_subscriptions",
+        back_populates="users",
+        lazy="selectin",
     )
 
 

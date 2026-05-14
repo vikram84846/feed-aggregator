@@ -30,10 +30,13 @@ class TopicModel(Base, TimeStampMixin, UUIDMixin, SoftDeletedMixin):
     name: Mapped[str] = mapped_column(index=True, unique=True)
 
     users: Mapped[list["UserModel"]] = relationship(
-        "UserModel", secondary="topic_subscriptions", back_populates="topics"
+        "UserModel",
+        secondary="topic_subscriptions",
+        back_populates="topics",
+        lazy="selectin",
     )
     posts: Mapped[list["PostModel"]] = relationship(
-        "PostModel", secondary="post_topics", back_populates="topics"
+        "PostModel", secondary="post_topics", back_populates="topics", lazy="selectin"
     )
 
 
@@ -50,6 +53,6 @@ class PostModel(Base, UUIDMixin, SoftDeletedMixin, TimeStampMixin):
     )
 
     topics: Mapped[list["TopicModel"]] = relationship(
-        "TopicModel", secondary="post_topics", back_populates="posts"
+        "TopicModel", secondary="post_topics", back_populates="posts", lazy="selectin"
     )
     source: Mapped["SourceModel"] = relationship("SourceModel", back_populates="posts")
