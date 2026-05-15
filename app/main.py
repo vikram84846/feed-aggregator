@@ -8,6 +8,7 @@ This Module is the main entry point of the fastapi app
 from fastapi import FastAPI
 from app.api.auth import router as auth_route
 from app.api.subscribe import router as subscribe_route
+from app.api.feed import router as feed_router
 import uvicorn
 
 app = FastAPI()
@@ -21,6 +22,7 @@ async def home():
 
 app.include_router(auth_route)
 app.include_router(subscribe_route)
+app.include_router(feed_router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
